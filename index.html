@@ -50,6 +50,10 @@
             width: 16px;
             border-radius: 50%;
         }
+        /* detailsのアニメーション・リセット */
+        details summary::-webkit-details-marker {
+            display: none;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-red-600 selection:text-white">
@@ -116,7 +120,7 @@
                         <p class="text-xs text-neutral-500" id="videoDate">公開日: ----/--/--</p>
                     </div>
 
-                    <!-- 共有・ダウンロード（添付画像と同様のブラウザネイティブ呼び出し） -->
+                    <!-- 共有・ダウンロード -->
                     <div class="flex items-center gap-3">
                         <!-- 共有ボタン -->
                         <button onclick="shareVideo()" class="flex items-center gap-2 px-5 py-3 bg-neutral-800 hover:bg-neutral-700 active:scale-95 transition-all rounded-full text-xs font-bold text-gray-200 shadow-md">
@@ -124,7 +128,7 @@
                             <span>共有する</span>
                         </button>
 
-                        <!-- ダウンロードボタン（ネイティブバー連動） -->
+                        <!-- ダウンロールボタン -->
                         <button id="downloadBtn" onclick="downloadVideo()" class="flex items-center gap-2 px-5 py-3 bg-neutral-800 hover:bg-neutral-700 active:scale-95 transition-all rounded-full text-xs font-bold text-gray-200 shadow-md">
                             <i data-lucide="download" class="w-4 h-4 text-green-400"></i>
                             <span id="downloadBtnText">ダウンロード</span>
@@ -155,36 +159,80 @@
         </aside>
     </div>
 
-    <!-- ダウンロード用のフォールバック案内（CORSなどのセキュリティ例外用） -->
+    <!-- ダウンロード解説モーダル（iOS/Android用折りたたみ手順） -->
     <div id="downloadModal" class="fixed inset-0 z-50 bg-black/90 flex items-center justify-center p-4 hidden">
-        <div class="bg-neutral-900 border border-neutral-800 rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl">
-            <div class="flex justify-between items-start">
+        <div class="bg-neutral-900 border border-neutral-800 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl">
+            <div class="flex justify-between items-center">
                 <h3 class="text-lg font-bold text-white flex items-center gap-2">
                     <i data-lucide="info" class="text-blue-400"></i>
                     <span>ダウンロード方法</span>
                 </h3>
-                <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors">
+                <button onclick="closeModal()" class="text-gray-400 hover:text-white transition-colors p-1 rounded-full hover:bg-neutral-800">
                     <i data-lucide="x" class="w-5 h-5"></i>
                 </button>
             </div>
-            <p class="text-sm text-neutral-300 leading-relaxed">
-                ブラウザのセキュリティ設定により、直接ダウンロードがブロックされました。以下の手順で確実に保存できます：
+            
+            <p class="text-xs text-neutral-400 leading-relaxed">
+                お使いの端末に合わせてダウンロード手順をご確認ください。（タップで開閉します）
             </p>
-            <div class="p-3.5 bg-black rounded-xl text-xs text-neutral-400 space-y-2">
-                <ol class="list-decimal list-inside space-y-1.5">
-                    <li>「動画ファイルを開く」をクリックします。</li>
-                    <li>動画画面を<span class="text-red-400 font-bold">長押し</span>または<span class="text-red-400 font-bold">右クリック</span>します。</li>
-                    <li>「<span class="text-white font-bold">名前を付けて動画を保存</span>」を選んで完了です！</li>
-                </ol>
+
+            <div class="space-y-3">
+                <!-- iPhoneアコーディオン -->
+                <details class="group bg-black rounded-2xl border border-neutral-800 overflow-hidden" open>
+                    <summary class="flex justify-between items-center p-4 cursor-pointer select-none hover:bg-neutral-950 transition-colors">
+                        <span class="text-sm font-black text-white flex items-center gap-2">
+                            <i data-lucide="smartphone" class="w-4 h-4 text-sky-400"></i>
+                            iPhone
+                        </span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-neutral-500 transition-transform duration-200 group-open:rotate-180"></i>
+                    </summary>
+                    <div class="p-4 border-t border-neutral-800 text-xs text-neutral-300 space-y-3 leading-relaxed">
+                        <!-- やり方の上に配置された「動画ダウンロード方法」（太字1.5文字分サイズ相当） -->
+                        <div class="text-base font-extrabold text-white pb-1">動画ダウンロード方法</div>
+                        
+                        <p>
+                            1. こちらを「<a href="https://www.icloud.com/shortcuts/a6ca0b7cf395429bbdef8a541cdd6b1e" target="_blank" class="text-blue-400 underline font-bold hover:text-blue-300">ダウンロード</a>」してください。
+                        </p>
+                        <p>
+                            2. 次に共有マークを押して、先ほどダウンロードしたショートカット（保存）があるので実行してください。
+                        </p>
+                        <p>
+                            3. 初めての場合は、色々表示されると思いますが、ウイルスは入っていませんので「常に許可」を押してください。
+                        </p>
+                        <p>
+                            4. そうするとアラートが出てくるので、それで終了です。
+                        </p>
+                        <div class="pt-2 border-t border-neutral-900 text-neutral-400">
+                            手順を覚えたら「<a id="iphoneDirectLink" href="#" target="_blank" class="text-blue-400 underline font-bold hover:text-blue-300">こちら</a>」
+                        </div>
+                    </div>
+                </details>
+
+                <!-- Androidアコーディオン -->
+                <details class="group bg-black rounded-2xl border border-neutral-800 overflow-hidden">
+                    <summary class="flex justify-between items-center p-4 cursor-pointer select-none hover:bg-neutral-950 transition-colors">
+                        <span class="text-sm font-black text-white flex items-center gap-2">
+                            <i data-lucide="smartphone" class="w-4 h-4 text-emerald-400"></i>
+                            Android
+                        </span>
+                        <i data-lucide="chevron-down" class="w-4 h-4 text-neutral-500 transition-transform duration-200 group-open:rotate-180"></i>
+                    </summary>
+                    <div class="p-4 border-t border-neutral-800 text-xs text-neutral-300 space-y-3 leading-relaxed">
+                        <!-- やり方の上に配置された「動画ダウンロード方法」（太字1.5文字分サイズ相当） -->
+                        <div class="text-base font-extrabold text-white pb-1">動画ダウンロード方法</div>
+                        
+                        <p>1. 動画を長押しで保存</p>
+                        <div class="pt-2 border-t border-neutral-900 text-neutral-400">
+                            手順を覚えたら「<a id="androidDirectLink" href="#" target="_blank" class="text-blue-400 underline font-bold hover:text-blue-300">こちら</a>」
+                        </div>
+                    </div>
+                </details>
             </div>
-            <div class="flex gap-2">
-                <button onclick="closeModal()" class="w-1/2 py-3 bg-neutral-800 text-white rounded-xl text-xs font-bold hover:bg-neutral-700 transition-colors">
+
+            <div class="pt-2">
+                <button onclick="closeModal()" class="w-full py-3 bg-neutral-800 text-white rounded-xl text-xs font-bold hover:bg-neutral-700 transition-colors">
                     閉じる
                 </button>
-                <a id="modalDownloadLink" href="#" target="_blank" class="w-1/2 py-3 bg-red-600 text-white rounded-xl text-xs font-bold hover:bg-red-500 transition-colors text-center flex items-center justify-center gap-1">
-                    <span>動画ファイルを開く</span>
-                    <i data-lucide="external-link" class="w-3.5 h-3.5"></i>
-                </a>
             </div>
         </div>
     </div>
@@ -210,7 +258,8 @@
         const videos = [
             {
                 id: 1,
-                title: "Beautiful Looping City Street Life (Recommended Video 1)",
+                // ★【タイトル変更】ここのダブルクォーテーション内を自由に変更できます！
+                title: "ななにーフェラ(第一弾)",
                 url: "https://uncertain-sapphire-c9yqbkta.edgeone.dev/22810.mp4",
                 thumbnail: "https://cdn.phototourl.com/free/2026-06-29-6145d12b-277d-489b-baac-e66a1835a9be.jpg", // 1つ目のサムネイル
                 duration: "0:15",
@@ -219,7 +268,7 @@
             },
             {
                 id: 2,
-                title: "Na-Na-Ni Motion Concept HD Video (Recommended Video 2)",
+                title: "ななにー性行為(第二弾)",
                 url: "https://conventional-indigo-13nr34rd.edgeone.dev/na-na-ni--ha-me_1080p.mp4",
                 thumbnail: "https://cdn.phototourl.com/free/2026-06-29-b5712154-6f49-47b7-b207-6f5c5562f76a.jpg", // 真ん中のサムネイル
                 duration: "0:24",
@@ -228,7 +277,7 @@
             },
             {
                 id: 3,
-                title: "Default Platform Showcase Premium Video (Recommended Video 3)",
+                title: "ななにーフェラ(第三弾)",
                 url: "https://www.image2url.com/r2/default/videos/1782740560252-5f3262f5-3764-4a12-bb39-e4ca8a96eca5.mp4",
                 thumbnail: "https://cdn.phototourl.com/free/2026-06-29-7cb9c5f8-d513-485a-b394-c46f8d68f273.jpg", // 一番下のサムネイル
                 duration: "0:09",
@@ -325,7 +374,7 @@
             }
         }
 
-        // 💥 【重要】ブラウザのネイティブダウンロードを強制的に呼び出すダウンロード関数
+        // 💥 ブラウザのネイティブダウンロードを呼び出し（失敗時はモーダルへ案内）
         async function downloadVideo() {
             const v = videos.find(item => item.id === activeId);
             if (!v) return;
@@ -367,13 +416,10 @@
                 // 完全なダウンロード用アンカーを裏側で作成し、自動クリック
                 const a = document.createElement("a");
                 a.href = blobUrl;
-                // 元のURLからファイル名を抽出（例: 22810.mp4）
                 const fileName = v.url.substring(v.url.lastIndexOf('/') + 1) || `video_${activeId}.mp4`;
                 a.download = fileName;
                 document.body.appendChild(a);
                 
-                // クリックにより、ブラウザは「ローカルの完了ファイル」と認識し、
-                // アップロード画像のような「ネイティブダウンロードバー」を即時にポップアップさせます。
                 a.click();
                 
                 // 後処理
@@ -382,7 +428,7 @@
                 
                 showToast("✅ ダウンロードをブラウザで開始しました！");
             } catch (error) {
-                // 万が一CORSポリシー等でfetchが拒否された場合のフォールバック案内
+                // 万が一CORSポリシー等でfetchが拒否された、または直接モーダルを開きたい場合はこちらへフォールバック
                 console.warn("Blob download failed, showing fallback modal", error);
                 openDownloadModal(v.url);
             } finally {
@@ -392,10 +438,16 @@
             }
         }
 
+        // ダウンロード方法モーダル表示
         function openDownloadModal(url) {
             const modal = document.getElementById("downloadModal");
-            const link = document.getElementById("modalDownloadLink");
-            link.href = url;
+            const iphoneLink = document.getElementById("iphoneDirectLink");
+            const androidLink = document.getElementById("androidDirectLink");
+            
+            // iPhone、Androidそれぞれの「こちら」リンクに再生中の動画の直接URLをバインド
+            iphoneLink.href = url;
+            androidLink.href = url;
+            
             modal.classList.remove("hidden");
         }
 
@@ -415,7 +467,6 @@
                 }`;
 
                 // サムネイル画像の描画処理
-                // bg-black（黒色背景）と object-contain を組み合わせて余分な部分を完全に黒色で満たします
                 const thumbnailHtml = `<img class="absolute inset-0 w-full h-full object-contain bg-black transition-transform group-hover:scale-105 duration-300" src="${v.thumbnail}" alt="${v.title}">`;
 
                 card.innerHTML = `
