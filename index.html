@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -71,31 +70,37 @@
             background-color: #ff2a33;
         }
 
-        /* 音量バー */
+        /* 音量バー（微調整しやすいように当たり判定とつまみを最適化） */
         #volumeBar {
             -webkit-appearance: none;
             appearance: none;
             background: transparent;
             cursor: pointer;
-            height: 20px;
+            height: 24px; /* タッチ判定エリアをシークバー同様に拡張 */
             display: flex;
             align-items: center;
         }
+        #volumeBar:focus {
+            outline: none;
+        }
         #volumeBar::-webkit-slider-runnable-track {
             background: linear-gradient(to right, #ffffff var(--volume-percent, 100%), #2b2b2b var(--volume-percent, 100%));
-            height: 4px;
-            border-radius: 2px;
+            height: 5px; /* トラックの太さをややアップ */
+            border-radius: 2.5px;
         }
         #volumeBar::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
             background-color: #ffffff;
-            height: 12px;
-            width: 12px;
+            height: 14px; /* つまみサイズを 12px から 14px にして指の滑りを防ぐ */
+            width: 14px;
             border-radius: 50%;
-            margin-top: -4px;
+            margin-top: -4.5px; /* (5px - 14px) / 2 = -4.5px */
             box-shadow: 0 1px 3px rgba(0,0,0,0.4);
             transition: transform 0.1s ease;
+        }
+        #volumeBar:hover::-webkit-slider-thumb {
+            transform: scale(1.15);
         }
         #volumeBar:active::-webkit-slider-thumb {
             transform: scale(1.3);
@@ -151,12 +156,13 @@
                             <button id="playBtn" class="text-white hover:text-red-500 transition-colors">
                                 <i data-lucide="play" class="w-6 h-6 fill-current"></i>
                             </button>
-                            <!-- 音量設定 -->
+                            <!-- 音量設定（微調整用に幅を拡張し、数値テキストを隣に設置） -->
                             <div class="flex items-center gap-2">
                                 <button id="muteBtn" class="text-white hover:text-neutral-300 transition-colors">
                                     <i data-lucide="volume-2" class="w-5 h-5"></i>
                                 </button>
-                                <input type="range" id="volumeBar" class="w-16" value="100" max="100">
+                                <input type="range" id="volumeBar" class="w-20 md:w-28 transition-all" value="100" max="100">
+                                <span id="volumeLevel" class="text-[10px] text-neutral-400 font-mono w-8 text-left select-none">100%</span>
                             </div>
                         </div>
 
@@ -327,7 +333,7 @@
     <!-- スクリプト -->
     <script>
         // 動画データベース（すべての動画に個別サムネイルをマッピング）
-         const videos = [
+        const videos = [
             {
                 id: 1,
                 // ★【タイトル変更】ここのダブルクォーテーション内を自由に変更できます！
@@ -370,6 +376,7 @@
         const muteBtn = document.getElementById("muteBtn");
         const seekBar = document.getElementById("seekBar");
         const volumeBar = document.getElementById("volumeBar");
+        const volumeLevelText = document.getElementById("volumeLevel");
         const durationText = document.getElementById("duration");
         const currentTimeText = document.getElementById("currentTime");
         const fullscreenBtn = document.getElementById("fullscreenBtn");
@@ -392,7 +399,7 @@
             lucide.createIcons();
             setupPlayerEventListeners();
 
-            // 音量バーの初期スタイル適用
+            // 音量バーの初期スタイル適用 (初期値100%)
             updateVolumeBarUI(100);
         };
 
@@ -424,9 +431,10 @@
             });
         }
 
-        // Web Share API：OS標準共有メニュー
+        // Web Share API：指定されたURLをベースに共有を行う
         async function shareVideo() {
-            const basePageUrl = window.location.origin + window.location.pathname;
+            // ご指定のカスタムベースURLを使用
+            const basePageUrl = "https://minecraft-jp.github.io/Angoukaangoukaangoukaangoukanananianngouka/";
             const finalShareUrl = `${basePageUrl}?v=${activeId}`;
             const currentVideo = videos.find(item => item.id === activeId);
 
@@ -592,10 +600,11 @@
             seekBar.style.setProperty('--seek-percent', `${percent}%`);
         }
 
-        // 音量バーのCSSカスタムプロパティを更新
+        // 音量バーのCSSカスタムプロパティと、右隣の％テキストを動的に更新
         function updateVolumeBarUI(percent) {
             volumeBar.value = percent;
             volumeBar.style.setProperty('--volume-percent', `${percent}%`);
+            volumeLevelText.textContent = `${percent}%`;
         }
 
         // 全画面表示の切替制御
@@ -724,7 +733,7 @@
             window.addEventListener('mouseup', endDrag);
             window.addEventListener('touchend', endDrag);
 
-            // ボリュームバーの設定
+            // ボリュームバーの設定（1%きざみでの変更をリアルタイム反映）
             volumeBar.addEventListener('input', () => {
                 const val = volumeBar.value;
                 player.volume = val / 100;
@@ -738,7 +747,7 @@
                 if (player.muted) {
                     updateVolumeBarUI(0);
                 } else {
-                    updateVolumeBarUI(player.volume * 100);
+                    updateVolumeBarUI(Math.round(player.volume * 100));
                 }
                 updateVolumeIcon();
             };
@@ -779,4 +788,4 @@
         }
     </script>
 </body>
-</html>
+</html>あ
