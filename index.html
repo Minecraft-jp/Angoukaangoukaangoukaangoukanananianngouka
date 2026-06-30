@@ -124,6 +124,30 @@
             border-radius: 0px !important;
             background-color: #000000 !important;
         }
+
+        /* 【一番かんたん！グラデーション設定】
+           この .gradient クラスを HTML 要素に付けるだけで光ります。
+           例: <span class="gradient">光らせたい文字</span>
+        */
+        @keyframes hashtagFlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+        .gradient {
+            background: linear-gradient(to right, #ef4444 0%, #440c0e 50%, #ef4444 100%);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-fill-color: transparent;
+            animation: hashtagFlow 3.5s linear infinite;
+            display: inline-block;
+            font-weight: 700;
+        }
+
+        /* 既存のプレイヤー装飾 */
+        #seekBar::-webkit-slider-runnable-track { background: linear-gradient(to right, #e50914 var(--seek-percent, 0%), #2b2b2b var(--seek-percent, 0%)); height: 6px; border-radius: 3px; }
+        #seekBar::-webkit-slider-thumb { -webkit-appearance: none; background-color: #e50914; height: 16px; width: 16px; border-radius: 50%; margin-top: -5px; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-red-600 selection:text-white">
@@ -342,7 +366,7 @@
                 thumbnail: "https://cdn.phototourl.com/free/2026-06-29-6145d12b-277d-489b-baac-e66a1835a9be.jpg", // 1つ目のサムネイル
                 duration: "0:15",
                 date: "2026/06/29",
-                desc: "Xで公開された動画。\n#フェラ #イラマチオ #エロ #なな #ななにー "
+                desc: "Xで公開された動画。\n ⁠<span class="gradient">#フェラ #イラマチオ #エロ #なな #ななにー </span>"
             },
             {
                 id: 2,
@@ -351,7 +375,7 @@
                 thumbnail: "https://cdn.phototourl.com/free/2026-06-29-b5712154-6f49-47b7-b207-6f5c5562f76a.jpg", // 真ん中のサムネイル
                 duration: "0:24",
                 date: "2026/06/29",
-                desc: "Xで公開された動画。\n#セックス #裸 #エロ #なな #ななにー "
+                desc: "Xで公開された動画。\n ⁠<span class="gradient">#セックス #裸 #エロ #なな #ななにー </span>"
             },
             {
                 id: 3,
@@ -360,7 +384,7 @@
                 thumbnail: "https://cdn.phototourl.com/free/2026-06-29-7cb9c5f8-d513-485a-b394-c46f8d68f273.jpg", // 一番下のサムネイル
                 duration: "0:09",
                 date: "2026/06/29",
-                desc: "Xで公開された動画。\n#フェラ #イラマチオ #エロ #なな #ななにー "
+                desc: "Xで公開された動画。\n ⁠<span class="gradient">#フェラ #イラマチオ #エロ #なな #ななにー <span>"
             }
         ];
 
